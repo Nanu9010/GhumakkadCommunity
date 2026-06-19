@@ -9,4 +9,3 @@ reportlab>=4.2
 django-import-export>=4.2
 gunicorn>=23.0
 whitenoise>=6.8
-serverless-wsgi>=1.7
