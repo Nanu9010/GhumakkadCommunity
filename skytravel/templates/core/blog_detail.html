@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }} - {{ brand.name }} Blog{% endblock %}
+{% block meta_description %}{{ post.meta_description|default:post.excerpt }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'core:blog_list' %}">Blog</a></li>
+            <li class="breadcrumb-item active">{{ post.title|truncatechars:50 }}</li>
+        </ol>
+    </nav>
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <article data-aos="fade-up">
+                <small class="text-muted text-uppercase" style="letter-spacing: 1px;">{{ post.get_category_display }}</small>
+                <h1 class="display-heading" style="font-size: 2.5rem;">{{ post.title }}</h1>
+                <div class="d-flex align-items-center gap-3 mt-2 mb-4">
+                    <small class="text-muted"><i class="bi bi-person"></i> {{ post.author.get_full_name|default:post.author.email }}</small>
+                    <small class="text-muted"><i class="bi bi-calendar"></i> {{ post.created_at|date:"M d, Y" }}</small>
+                </div>
+                {% if post.image %}<img src="{{ post.image.url }}" class="w-100 mb-4" style="border-radius: var(--radius); max-height: 400px; object-fit: cover;" alt="{{ post.title }}">{% endif %}
+                <div class="blog-content">
+                    {{ post.content|linebreaks }}
+                </div>
+            </article>
+        </div>
+        <div class="col-lg-4">
+            <div class="booking-sidebar">
+                <h5>Recent Posts</h5>
+                {% for rp in recent_posts %}
+                <a href="{% url 'core:blog_detail' slug=rp.slug %}" class="text-decoration-none">
+                    <div class="d-flex gap-2 mb-3">
+                        {% if rp.image %}<img src="{{ rp.image.url }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px;">{% endif %}
+                        <div>
+                            <small><strong>{{ rp.title|truncatechars:40 }}</strong></small>
+                            <small class="d-block text-muted">{{ rp.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

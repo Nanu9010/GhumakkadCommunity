@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Travel Blog - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <h1 class="display-heading" style="font-size: 2.5rem;">Travel Blog</h1>
+    <p class="text-muted">Inspiration, guides, and stories from travelers worldwide</p>
+    <div class="d-flex flex-wrap gap-2 mt-3 mb-4">
+        <a href="{% url 'core:blog_list' %}" class="filter-tag {% if not request.GET.category %}active{% endif %}">All</a>
+        {% for key, label in categories %}
+        <a href="?category={{ key }}" class="filter-tag {% if request.GET.category == key %}active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+    <div class="row g-4">
+        {% for post in posts %}
+        <div class="col-md-6 col-lg-4" data-aos="fade-up">
+            <a href="{% url 'core:blog_detail' slug=post.slug %}" class="text-decoration-none">
+                <div class="card-premium h-100">
+                    {% if post.image %}<img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}" style="height: 200px;">{% endif %}
+                    <div class="card-body">
+                        <small class="text-muted text-uppercase" style="letter-spacing: 1px;">{{ post.get_category_display }}</small>
+                        <h5 class="mt-2" style="font-family: 'Manrope', sans-serif;">{{ post.title|truncatechars:60 }}</h5>
+                        <p class="text-muted small">{{ post.excerpt|truncatechars:120 }}</p>
+                        <small class="text-muted">{{ post.created_at|date:"M d, Y" }} · {{ post.author.get_full_name|default:post.author.email }}</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-journal-text" style="font-size: 3rem; color: var(--muted);"></i>
+            <h4 class="mt-3">No posts yet</h4>
+            <p class="text-muted">Check back soon for travel inspiration!</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% if posts.has_other_pages %}
+    <nav class="mt-5"><ul class="pagination justify-content-center pagination-custom">
+        {% if posts.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a></li>{% endif %}
+        {% for i in posts.paginator.page_range %}<li class="page-item {% if posts.number == i %}active{% endif %}"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>{% endfor %}
+        {% if posts.has_next %}<li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}">Next</a></li>{% endif %}
+    </ul></nav>
+    {% endif %}
+</div>
+{% endblock %}

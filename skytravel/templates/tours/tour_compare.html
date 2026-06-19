@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Compare Tours - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <h1 class="display-heading" style="font-size: 2rem;">Compare Tours</h1>
+    {% if tours %}
+    <div class="table-responsive mt-4">
+        <table class="table compare-table">
+            <thead>
+                <tr>
+                    <th style="width: 150px;">Feature</th>
+                    {% for t in tours %}
+                    <th class="text-center">{{ t.title|truncatechars:30 }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Price</strong></td>
+                    {% for t in tours %}<td class="text-center">₹{{ t.price|floatformat:0 }}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Duration</strong></td>
+                    {% for t in tours %}<td class="text-center">{{ t.duration }}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Rating</strong></td>
+                    {% for t in tours %}<td class="text-center">{{ t.rating }} ({{ t.reviews_count }})</td>{% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Max Guests</strong></td>
+                    {% for t in tours %}<td class="text-center">{{ t.max_guests }}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <td><strong>Destination</strong></td>
+                    {% for t in tours %}<td class="text-center">{{ t.destination.name }}</td>{% endfor %}
+                </tr>
+                <tr>
+                    <td></td>
+                    {% for t in tours %}<td class="text-center"><a href="{% url 'tours:tour_detail' slug=t.slug %}" class="btn btn-primary-custom btn-sm">View</a></td>{% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted">Select tours to compare.</p>
+    {% endif %}
+</div>
+{% endblock %}

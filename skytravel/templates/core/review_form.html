@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if edit %}Edit Review{% else %}Write a Review{% endif %} - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="form-custom" data-aos="fade-up">
+                <h2 class="section-title">{% if edit %}Edit Your Review{% else %}Write a Review{% endif %}</h2>
+                {% if obj %}<p class="text-muted">For: <strong>{{ obj }}</strong></p>{% endif %}
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary-custom w-100">{% if edit %}Update Review{% else %}Submit Review{% endif %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

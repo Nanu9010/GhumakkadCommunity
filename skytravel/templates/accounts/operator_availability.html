@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Availability - {{ tour.title }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <h1 class="display-heading" style="font-size: 2rem;">Availability: {{ tour.title }}</h1>
+    <div class="row g-4 mt-3">
+        <div class="col-md-5">
+            <div class="form-custom">
+                <h5>Add Availability</h5>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        {{ form.date }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Available</label>
+                        {{ form.is_available }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Start Time</label>
+                        {{ slot_form.start_time }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">End Time</label>
+                        {{ slot_form.end_time }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Capacity</label>
+                        {{ slot_form.capacity }}
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom">Add Slot</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="form-custom">
+                <h5>Existing Availability</h5>
+                {% for av in availabilities %}
+                <div class="border-bottom pb-2 mb-2">
+                    <strong>{{ av.date }}</strong>
+                    <span class="badge {% if av.is_available %}bg-success{% else %}bg-danger{% endif %}">{% if av.is_available %}Available{% else %}Unavailable{% endif %}</span>
+                    <div class="mt-1">
+                        {% for slot in av.slots.all %}
+                        <span class="badge bg-primary-custom">{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }} ({{ slot.available }}/{{ slot.capacity }})</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No availability set yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

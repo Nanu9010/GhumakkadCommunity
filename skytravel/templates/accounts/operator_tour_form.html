@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if edit %}Edit Tour{% else %}Create Tour{% endif %} - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-custom" data-aos="fade-up">
+                <h2 class="section-title">{% if edit %}Edit Tour{% else %}Create New Tour{% endif %}</h2>
+                <p class="text-muted">Fill in the details below</p>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary-custom">
+                            {% if edit %}Update Tour{% else %}Create Tour{% endif %}
+                        </button>
+                        <a href="{% url 'accounts:operator_dashboard' %}" class="btn btn-outline-custom">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

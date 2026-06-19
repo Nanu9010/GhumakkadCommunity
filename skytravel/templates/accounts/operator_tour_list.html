@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Tours - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-heading" style="font-size: 2rem;">My Tours</h1>
+            <p class="text-muted">Manage your tour listings</p>
+        </div>
+        <a href="{% url 'accounts:operator_tour_create' %}" class="btn btn-primary-custom"><i class="bi bi-plus"></i> New Tour</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead><tr><th>Title</th><th>Destination</th><th>Price</th><th>Status</th><th>Bookings</th><th>Rating</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for tour in tours %}
+                <tr>
+                    <td>{{ tour.title|truncatechars:40 }}</td>
+                    <td>{{ tour.destination.name }}</td>
+                    <td>₹{{ tour.price|floatformat:0 }}</td>
+                    <td><span class="badge {% if tour.status == 'published' %}bg-success{% elif tour.status == 'pending' %}bg-warning{% elif tour.status == 'draft' %}bg-secondary{% else %}bg-danger{% endif %}">{{ tour.get_status_display }}</span></td>
+                    <td>{{ tour.booking_count }}</td>
+                    <td>{{ tour.rating }}</td>
+                    <td>
+                        <a href="{% url 'accounts:operator_tour_detail' tour.pk %}" class="btn btn-sm btn-outline-custom"><i class="bi bi-eye"></i></a>
+                        <a href="{% url 'accounts:operator_tour_edit' tour.pk %}" class="btn btn-sm btn-outline-custom"><i class="bi bi-pencil"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center py-4 text-muted">No tours created yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

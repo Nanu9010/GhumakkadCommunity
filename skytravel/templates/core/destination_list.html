@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load travel_tags %}
+
+{% block title %}Destinations - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+            <li class="breadcrumb-item active">Destinations</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="display-heading" style="font-size: 2.5rem;">Destinations</h1>
+            <p class="text-muted">Explore handpicked destinations worldwide</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="?sort=name" class="filter-tag {% if sort == 'name' %}active{% endif %}">Name</a>
+            <a href="?sort=rating" class="filter-tag {% if sort == 'rating' %}active{% endif %}">Rating</a>
+            <a href="?sort=popular" class="filter-tag {% if sort == 'popular' %}active{% endif %}">Popular</a>
+        </div>
+    </div>
+    <div class="row g-4">
+        {% for dest in destinations %}
+        <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
+            <a href="{% url 'core:destination_detail' slug=dest.slug %}" class="text-decoration-none">
+                <div class="dest-card" style="height: 300px;">
+                    {% if dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.name }}">{% endif %}
+                    <div class="dest-overlay">
+                        <h3>{{ dest.name }}</h3>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="rating-badge">{{ dest.rating }}</span>
+                            <small>{{ dest.reviews_count }} reviews</small>
+                        </div>
+                        <small>{{ dest.tours_count }} tours available</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-geo-alt" style="font-size: 3rem; color: var(--muted);"></i>
+            <h4 class="mt-3">No destinations yet</h4>
+            <p class="text-muted">We're adding new destinations soon!</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% if destinations.has_other_pages %}
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center pagination-custom">
+            {% if destinations.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ destinations.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            {% for i in destinations.paginator.page_range %}
+            <li class="page-item {% if destinations.number == i %}active{% endif %}">
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            </li>
+            {% endfor %}
+            {% if destinations.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ destinations.next_page_number }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

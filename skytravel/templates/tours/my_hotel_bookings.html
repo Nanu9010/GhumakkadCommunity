@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h1>My Hotel Bookings</h1>
+    {% for booking in bookings %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>{{ booking.hotel.name }}</h5>
+            <p>Check-in: {{ booking.check_in }} | Check-out: {{ booking.check_out }}</p>
+            <p>Status: {{ booking.get_status_display }}</p>
+            <p>Total: {{ booking.total }}</p>
+        </div>
+    </div>
+    {% empty %}
+    <p>No hotel bookings yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

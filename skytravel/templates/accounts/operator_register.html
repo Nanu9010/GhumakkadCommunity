@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Become an Operator - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-custom" data-aos="fade-up">
+                <h2 class="section-title">Become a Tour Operator</h2>
+                <p class="text-muted">Submit your business details for verification</p>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h5 class="mt-3">Business Information</h5>
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}<small class="text-muted">{{ field.help_text }}</small>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <h5 class="mt-4">Verification Document</h5>
+                    <p class="text-muted small">Upload ID proof or business license for verification</p>
+                    {% for field in doc_form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary-custom w-100 mt-3">Submit for Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+Django>=5.1,<5.2
+django-allauth>=64.0
+django-crispy-forms>=2.3
+crispy-bootstrap5>=2024.10
+Pillow>=11.0
+razorpay>=1.4
+python-dotenv>=1.1
+reportlab>=4.2
+django-import-export>=4.2
+gunicorn>=23.0
+whitenoise>=6.8

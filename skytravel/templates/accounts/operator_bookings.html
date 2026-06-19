@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bookings Received - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <h1 class="display-heading" style="font-size: 2rem;">Bookings Received</h1>
+    <p class="text-muted">All bookings for your tours</p>
+    <div class="table-responsive mt-4">
+        <table class="table">
+            <thead><tr><th>Booking #</th><th>Tour</th><th>Customer</th><th>Date</th><th>Travelers</th><th>Total</th><th>Status</th><th>Booked On</th></tr></thead>
+            <tbody>
+                {% for b in bookings %}
+                <tr>
+                    <td>{{ b.pk }}</td>
+                    <td>{{ b.tour.title|truncatechars:30 }}</td>
+                    <td>{{ b.user.email|truncatechars:20 }}</td>
+                    <td>{{ b.travel_date }}</td>
+                    <td>{{ b.travelers }}</td>
+                    <td>₹{{ b.total|floatformat:0 }}</td>
+                    <td><span class="badge {% if b.status == 'confirmed' %}bg-success{% elif b.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">{{ b.status }}</span></td>
+                    <td>{{ b.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center py-4 text-muted">No bookings received.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

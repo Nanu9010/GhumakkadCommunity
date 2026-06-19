@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ tour.title }} - Operator{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="display-heading" style="font-size: 2rem;">{{ tour.title }}</h1>
+            <span class="badge {% if tour.status == 'published' %}bg-success{% elif tour.status == 'pending' %}bg-warning{% elif tour.status == 'draft' %}bg-secondary{% else %}bg-danger{% endif %} fs-6">{{ tour.get_status_display }}</span>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'accounts:operator_tour_edit' tour.pk %}" class="btn btn-primary-custom btn-sm">Edit</a>
+            <a href="{% url 'accounts:operator_availability' tour.pk %}" class="btn btn-outline-custom btn-sm">Availability</a>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="form-custom">
+                <p><strong>Destination:</strong> {{ tour.destination.name }}</p>
+                <p><strong>Price:</strong> ₹{{ tour.price|floatformat:2 }}</p>
+                {% if tour.discount_price %}<p><strong>Discount Price:</strong> ₹{{ tour.discount_price|floatformat:2 }}</p>{% endif %}
+                <p><strong>Duration:</strong> {{ tour.duration }}</p>
+                <p><strong>Max Guests:</strong> {{ tour.max_guests }}</p>
+                <p><strong>Short Description:</strong> {{ tour.short_description }}</p>
+                <hr>
+                <p>{{ tour.description }}</p>
+                {% if tour.includes %}<p><strong>Includes:</strong> {{ tour.includes }}</p>{% endif %}
+                {% if tour.excludes %}<p><strong>Excludes:</strong> {{ tour.excludes }}</p>{% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-custom">
+                <h5>Tour Images</h5>
+                {% if tour.image %}<img src="{{ tour.image.url }}" class="w-100 mb-2" style="border-radius:8px;">{% endif %}
+                {% if tour.image_2 %}<img src="{{ tour.image_2.url }}" class="w-100 mb-2" style="border-radius:8px;">{% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

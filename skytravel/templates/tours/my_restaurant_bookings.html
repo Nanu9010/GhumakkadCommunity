@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h1>My Restaurant Bookings</h1>
+    {% for booking in bookings %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5>{{ booking.restaurant.name }}</h5>
+            <p>Date: {{ booking.booking_date }} | Time: {{ booking.booking_time }}</p>
+            <p>Meal: {{ booking.get_meal_time_display }} | Guests: {{ booking.guests }}</p>
+            <p>Status: {{ booking.get_status_display }}</p>
+        </div>
+    </div>
+    {% empty %}
+    <p>No restaurant bookings yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

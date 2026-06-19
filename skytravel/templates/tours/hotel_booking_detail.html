@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h1>Hotel Booking #{{ booking.pk }}</h1>
+    <p>Hotel: {{ booking.hotel.name }}</p>
+    <p>Room: {{ booking.room_type.name }}</p>
+    <p>Check-in: {{ booking.check_in }}</p>
+    <p>Check-out: {{ booking.check_out }}</p>
+    <p>Status: {{ booking.get_status_display }}</p>
+    <p>Total: {{ booking.total }}</p>
+</div>
+{% endblock %}

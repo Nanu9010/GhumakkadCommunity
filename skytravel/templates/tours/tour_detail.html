@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load travel_tags %}
+
+{% block title %}{{ tour.title }} - {{ brand.name }}{% endblock %}
+{% block meta_description %}{{ tour.meta_description|default:tour.short_description }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'tours:tour_list' %}">Tours</a></li>
+            <li class="breadcrumb-item active">{{ tour.title|truncatechars:50 }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <!-- Gallery -->
+            <div class="detail-gallery mb-4" data-aos="fade-up">
+                <div class="gallery-main mb-2">
+                    {% if tour.image %}<img src="{{ tour.image.url }}" alt="{{ tour.title }}" style="height: 450px;">{% endif %}
+                </div>
+                <div class="row g-2 thumb-grid">
+                    {% if tour.image_2 %}<div class="col-3"><img src="{{ tour.image_2.url }}" class="active" alt=""></div>{% endif %}
+                    {% if tour.image_3 %}<div class="col-3"><img src="{{ tour.image_3.url }}" alt=""></div>{% endif %}
+                    {% if tour.image_4 %}<div class="col-3"><img src="{{ tour.image_4.url }}" alt=""></div>{% endif %}
+                    {% if tour.image_5 %}<div class="col-3"><img src="{{ tour.image_5.url }}" alt=""></div>{% endif %}
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h1 class="display-heading" style="font-size: 2rem;">{{ tour.title }}</h1>
+                        <p class="text-muted"><i class="bi bi-geo-alt"></i> {{ tour.destination.name }}, {{ tour.destination.country }}</p>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'core:wishlist_toggle' 'tour' tour.pk %}" class="btn btn-outline-custom btn-sm"><i class="bi bi-heart"></i></a>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-3 mb-3">
+                    <span><span class="rating-badge">{{ tour.rating }}</span> <span class="stars ms-1">{% for i in "12345" %}{% if forloop.counter <= tour.rating|floatformat:0 %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}{% endfor %}</span> <small>({{ tour.reviews_count }} reviews)</small></span>
+                    <span><i class="bi bi-clock"></i> {{ tour.duration }}</span>
+                    <span><i class="bi bi-people"></i> Max {{ tour.max_guests }}</span>
+                </div>
+
+                <p>{{ tour.description }}</p>
+            </div>
+
+            <!-- Includes/Excludes -->
+            <div class="row g-4 mt-3" data-aos="fade-up">
+                <div class="col-md-6">
+                    <div class="glass-card p-4 h-100">
+                        <h5><i class="bi bi-check-circle text-success"></i> Includes</h5>
+                        <ul class="list-unstyled mt-3">
+                            {% for item in tour.includes|default:''|slice:":200" %}
+                            <li class="mb-2"><i class="bi bi-check me-2 text-success"></i> {{ item }}</li>
+                            {% empty %}
+                            <li class="text-muted">Details coming soon</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="glass-card p-4 h-100">
+                        <h5><i class="bi bi-x-circle text-danger"></i> Excludes</h5>
+                        <ul class="list-unstyled mt-3">
+                            {% for item in tour.excludes|default:''|slice:":200" %}
+                            <li class="mb-2"><i class="bi bi-x me-2 text-danger"></i> {{ item }}</li>
+                            {% empty %}
+                            <li class="text-muted">Details coming soon</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews -->
+            <section class="mt-5" data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Reviews ({{ reviews.count }})</h3>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'core:review_create' 'tour' tour.pk %}" class="btn btn-primary-custom btn-sm">Write Review</a>
+                    {% endif %}
+                </div>
+                {% for review in reviews %}
+                <div class="glass-card p-3 mb-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>{{ review.user.email|truncatechars:25 }}</strong>
+                            <span class="stars ms-2">{{ review.rating|star_range }}</span>
+                        </div>
+                        <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    {% if review.title %}<h6 class="mt-2">{{ review.title }}</h6>{% endif %}
+                    <p class="mt-1 mb-0">{{ review.content }}</p>
+                    <div class="mt-2">
+                        <a href="{% url 'core:review_helpful' review.pk %}" class="text-muted small"><i class="bi bi-hand-thumbs-up"></i> ({{ review.helpful_votes }})</a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No reviews yet.</p>
+                {% endfor %}
+                <a href="{% url 'core:review_create' 'tour' tour.pk %}" class="btn btn-outline-custom btn-sm">Write a Review</a>
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="booking-sidebar" data-aos="fade-left">
+                <div class="text-center mb-3">
+                    {% if tour.discount_price %}
+                    <span class="text-decoration-line-through text-muted">₹{{ tour.price|floatformat:0 }}</span>
+                    <span class="price-tag" style="font-size: 2rem;">₹{{ tour.discount_price|floatformat:0 }}</span>
+                    {% else %}
+                    <span class="price-tag" style="font-size: 2rem;">₹{{ tour.price|floatformat:0 }}</span>
+                    {% endif %}
+                    <small class="text-muted d-block">per person</small>
+                </div>
+                <hr>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-clock me-2"></i> Duration: {{ tour.duration }}</li>
+                    <li class="mb-2"><i class="bi bi-people me-2"></i> Max {{ tour.max_guests }} guests</li>
+                    {% if tour.meeting_point %}<li class="mb-2"><i class="bi bi-geo me-2"></i> {{ tour.meeting_point|truncatechars:30 }}</li>{% endif %}
+                </ul>
+                <hr>
+                {% if user.is_authenticated %}
+                    {% if tour.status == 'published' %}
+                    <form method="POST" action="{% url 'tours:booking_create' slug=tour.slug %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label>Select Date</label>
+                            <select name="travel_date" class="form-control" required>
+                                <option value="">Choose date...</option>
+                                {% for av in available_dates %}
+                                <option value="{{ av.date|date:'Y-m-d' }}">{{ av.date|date:"M d, Y" }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label>Number of Travelers</label>
+                            <input type="number" name="travelers" class="form-control" value="1" min="1" max="{{ tour.max_guests }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom w-100">Book Now</button>
+                    </form>
+                    {% else %}
+                    <p class="text-warning text-center">This tour is not yet published.</p>
+                    {% endif %}
+                {% else %}
+                <p class="text-center text-muted"><a href="{% url 'account_login' %}">Sign in</a> to book this tour.</p>
+                {% endif %}
+            </div>
+            <!-- Similar Tours -->
+            {% if similar_tours %}
+            <div class="mt-4">
+                <h5>Similar Tours</h5>
+                {% for t in similar_tours %}
+                <a href="{% url 'tours:tour_detail' slug=t.slug %}" class="text-decoration-none">
+                    <div class="glass-card p-2 mb-2 d-flex align-items-center gap-3">
+                        {% if t.image %}<img src="{{ t.image.url }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">{% endif %}
+                        <div>
+                            <small><strong>{{ t.title|truncatechars:30 }}</strong></small>
+                            <small class="d-block text-muted">₹{{ t.price|floatformat:0 }}</small>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

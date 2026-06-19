@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load travel_tags %}
+
+{% block content %}
+<section class="hero-section brand-hero" id="home">
+    <video class="hero-video" autoplay muted loop playsinline poster="{% static 'images/hero-poster.jpg' %}">
+        <source src="{% static 'images/hero.mp4' %}" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <img src="{% static brand.logo %}" alt="{{ brand.name }} logo" class="hero-logo" data-aos="fade-up">
+        <p class="hero-kicker" data-aos="fade-up" data-aos-delay="50">Travel Company | {{ brand.location }}</p>
+        <h1 class="display-heading" data-aos="fade-up" data-aos-delay="100">{{ brand.tagline }}</h1>
+        <p data-aos="fade-up" data-aos-delay="150">{{ brand.subtagline }} with community-led tours, treks, weekend escapes, hotels, restaurants, and shared journeys curated by Ghumakkads.</p>
+        <form action="{% url 'core:search' %}" method="GET" class="search-bar" data-aos="fade-up" data-aos-delay="200">
+            <input type="text" name="q" class="form-control" placeholder="Search destination, trek, or trip...">
+            <div class="divider"></div>
+            <input type="date" name="check_in" class="form-control" placeholder="Check in">
+            <div class="divider"></div>
+            <input type="date" name="check_out" class="form-control" placeholder="Check out">
+            <div class="divider d-none d-md-block"></div>
+            <select name="guests" class="form-select d-none d-md-block" style="max-width:110px;">
+                <option value="1">1 Guest</option>
+                <option value="2">2 Guests</option>
+                <option value="3">3 Guests</option>
+                <option value="4">4+ Guests</option>
+            </select>
+            <button type="submit" class="btn-search"><i class="bi bi-search me-2"></i>Search</button>
+        </form>
+        <div class="hero-actions" data-aos="fade-up" data-aos-delay="250">
+            <a href="{{ brand.instagram_url }}" target="_blank" rel="noopener" class="btn btn-primary-custom">
+                <i class="bi bi-instagram me-2"></i>@{{ brand.instagram_handle }}
+            </a>
+            <a href="https://wa.me/91{{ brand.whatsapp_primary }}" target="_blank" rel="noopener" class="btn btn-outline-light-custom">
+                <i class="bi bi-whatsapp me-2"></i>{{ brand.whatsapp_display }}
+            </a>
+        </div>
+    </div>
+    <div class="scroll-indicator">
+        <i class="bi bi-chevron-down"></i>
+    </div>
+</section>
+
+<section class="section-padding community-section">
+    <div class="container">
+        <div class="row g-4 align-items-stretch">
+            <div class="col-lg-5" data-aos="fade-up">
+                <div class="community-card h-100">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="{% static brand.logo %}" alt="{{ brand.name }} logo" class="community-logo">
+                        <div>
+                            <p class="eyebrow mb-1">Official Community</p>
+                            <h2 class="section-title mb-0">{{ brand.name }}</h2>
+                        </div>
+                    </div>
+                    <p class="section-subtitle mb-4">{{ brand.description }}</p>
+                    <div class="community-stat-grid">
+                        <div>
+                            <strong>113+</strong>
+                            <span>community posts</span>
+                        </div>
+                        <div>
+                            <strong>689+</strong>
+                            <span>followers</span>
+                        </div>
+                        <div>
+                            <strong>2</strong>
+                            <span>founders</span>
+                        </div>
+                    </div>
+                    <div class="community-contact mt-4">
+                        <span><i class="bi bi-geo-alt"></i>{{ brand.location }}</span>
+                        <span><i class="bi bi-whatsapp"></i>{{ brand.whatsapp_display }}</span>
+                    </div>
+                    <a href="{{ brand.instagram_url }}" target="_blank" rel="noopener" class="btn btn-primary-custom mt-4">
+                        Follow on Instagram
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+                <div class="founder-panel h-100">
+                    <div class="d-flex justify-content-between align-items-end mb-4">
+                        <div>
+                            <p class="eyebrow mb-1">Meet the founders</p>
+                            <h2 class="section-title mb-0">Built by travelers, for travelers</h2>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        {% for founder in brand.founders %}
+                        <div class="col-md-6">
+                            <div class="founder-card">
+                                <img src="{% static founder.image %}" alt="{{ founder.name }}">
+                                <div class="founder-card-body">
+                                    <h3>{{ founder.name }}</h3>
+                                    <a href="https://www.instagram.com/{{ founder.handle }}/" target="_blank" rel="noopener">@{{ founder.handle }}</a>
+                                    <p>{{ founder.bio }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding section-bg-alt">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">Explore by Category</h2>
+            <p class="section-subtitle">Find a trip style that matches your mood</p>
+        </div>
+        <div class="row g-3 justify-content-center">
+            {% for category in categories %}
+            <div class="col-6 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|multiply:50 }}">
+                <a href="{% url 'core:destination_list' %}?category={{ category.slug }}" class="text-decoration-none">
+                    <div class="glass-card text-center p-4">
+                        <div class="mb-2" style="font-size: 2rem; color: var(--primary);">
+                            {% if category.icon %}<i class="bi bi-{{ category.icon }}"></i>{% else %}<i class="bi bi-geo-alt"></i>{% endif %}
+                        </div>
+                        <h6 style="font-family: 'Manrope', sans-serif; font-weight: 600;">{{ category.name }}</h6>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4" data-aos="fade-up">
+            <div>
+                <h2 class="section-title">Popular Destinations</h2>
+                <p class="section-subtitle mb-0">Handpicked places for your next Ghumakkad story</p>
+            </div>
+            <a href="{% url 'core:destination_list' %}" class="btn btn-outline-custom d-none d-md-inline-block">View All</a>
+        </div>
+        <div class="row g-4">
+            {% for dest in popular_destinations %}
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|multiply:50 }}">
+                <a href="{% url 'core:destination_detail' slug=dest.slug %}" class="text-decoration-none">
+                    <div class="dest-card">
+                        {% if dest.image %}<img src="{{ dest.image.url }}" alt="{{ dest.name }}">{% endif %}
+                        <div class="dest-overlay">
+                            <h3>{{ dest.name }}</h3>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="rating-badge">{{ dest.rating }}</span>
+                                <span><i class="bi bi-star-fill" style="color:#f9b233;"></i></span>
+                                <small>{{ dest.reviews_count }} reviews</small>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Destinations coming soon...</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section-padding section-bg-alt">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4" data-aos="fade-up">
+            <div>
+                <h2 class="section-title">Trending Trips</h2>
+                <p class="section-subtitle mb-0">Community favorites people are booking this month</p>
+            </div>
+            <a href="{% url 'tours:tour_list' %}" class="btn btn-outline-custom d-none d-md-inline-block">View All</a>
+        </div>
+        <div class="row g-4">
+            {% for tour in trending_tours %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|multiply:100 }}">
+                <div class="card-premium tour-card">
+                    <div class="position-relative">
+                        {% if tour.image %}<img src="{{ tour.image.url }}" class="card-img-top" alt="{{ tour.title }}">{% endif %}
+                        {% if tour.discount_price %}
+                        <span class="position-absolute top-0 end-0 m-3 badge" style="background: #e74c3c;">-{{ tour.discount_price|percentage:tour.price }}%</span>
+                        {% endif %}
+                        {% if tour.is_trending %}
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-primary-custom">Trending</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 style="font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 1rem;">{{ tour.title|truncatechars:50 }}</h5>
+                        </div>
+                        <div class="tour-meta mb-2">
+                            <span><i class="bi bi-geo-alt"></i> {{ tour.destination.name }}</span>
+                            <span class="ms-3"><i class="bi bi-clock"></i> {{ tour.duration }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="stars">
+                                    {% with ''|center:5 as range %}
+                                    {% for _ in range %}
+                                        {% if forloop.counter <= tour.rating|floatformat:0 %}<i class="bi bi-star-fill"></i>{% else %}<i class="bi bi-star"></i>{% endif %}
+                                    {% endfor %}
+                                    {% endwith %}
+                                </span>
+                                <small class="text-muted">({{ tour.reviews_count }})</small>
+                            </div>
+                            <div class="text-end">
+                                {% if tour.discount_price %}
+                                <small class="text-decoration-line-through text-muted">INR {{ tour.price|floatformat:0 }}</small><br>
+                                {% endif %}
+                                <span class="price-tag">INR {{ tour.discount_price|default:tour.price|floatformat:0 }}<small>/person</small></span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'tours:tour_detail' slug=tour.slug %}" class="stretched-link"></a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Trips coming soon...</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">Why Travel With Ghumakkad</h2>
+            <p class="section-subtitle">Small details, local energy, and a community that shows up</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="glass-card text-center p-4 h-100">
+                    <div class="feature-icon mx-auto"><i class="bi bi-compass"></i></div>
+                    <h5>Offbeat Plans</h5>
+                    <p class="text-muted small">Trips shaped around trails, waterfalls, beaches, forts, and places that feel alive.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card text-center p-4 h-100">
+                    <div class="feature-icon mx-auto"><i class="bi bi-people"></i></div>
+                    <h5>Community First</h5>
+                    <p class="text-muted small">Meet new people, travel in a group, and come back with friends, not just photos.</p>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="glass-card text-center p-4 h-100">
+                    <div class="feature-icon mx-auto"><i class="bi bi-shield-check"></i></div>
+                    <h5>Organized Support</h5>
+                    <p class="text-muted small">Clear communication, WhatsApp updates, and trip hosts who care about the experience.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding section-bg-alt">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="section-title">Community Stories</h2>
+            <p class="section-subtitle">The kind of memories we want every traveler to bring home</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="testimonial-card">
+                    <div class="stars mb-2">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="mb-3">"The trip felt personal from the first message. Everything was planned, but the journey still felt spontaneous and free."</p>
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Pratik+W&background=20295f&color=fff&size=50" alt="Pratik W" class="testimonial-avatar me-3">
+                        <div>
+                            <strong>Pratik W.</strong>
+                            <small class="text-muted d-block">Pune</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="testimonial-card">
+                    <div class="stars mb-2">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="mb-3">"I joined solo and never felt alone. The group energy, route, and hosts made the whole weekend memorable."</p>
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Ananya+S&background=ef7b22&color=fff&size=50" alt="Ananya S" class="testimonial-avatar me-3">
+                        <div>
+                            <strong>Ananya S.</strong>
+                            <small class="text-muted d-block">Mumbai</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="testimonial-card">
+                    <div class="stars mb-2">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="mb-3">"The best part was how easy it was to coordinate. One WhatsApp chat and the plan was sorted."</p>
+                    <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=Rahul+D&background=1f8b5f&color=fff&size=50" alt="Rahul D" class="testimonial-avatar me-3">
+                        <div>
+                            <strong>Rahul D.</strong>
+                            <small class="text-muted d-block">Nashik</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-padding cta-band">
+    <div class="container text-center" data-aos="fade-up">
+        <p class="eyebrow">Upcoming memories start here</p>
+        <h2 class="section-title">Ready for Your Next Ghumakkad Adventure?</h2>
+        <p class="section-subtitle">Explore trips, follow the community, or message us on WhatsApp to plan your next escape.</p>
+        <div class="mt-4">
+            <a href="{% url 'core:destination_list' %}" class="btn btn-primary-custom btn-lg me-3">Explore Destinations</a>
+            <a href="https://wa.me/91{{ brand.whatsapp_primary }}" target="_blank" rel="noopener" class="btn btn-outline-custom btn-lg">Message on WhatsApp</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking #{{ booking.pk }} - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-custom" data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h2 class="section-title">Booking #{{ booking.pk }}</h2>
+                    <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %} fs-5">{{ booking.status }}</span>
+                </div>
+                <hr>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <p><strong>Tour:</strong> {{ booking.tour.title }}</p>
+                        <p><strong>Destination:</strong> {{ booking.tour.destination.name }}</p>
+                        <p><strong>Travel Date:</strong> {{ booking.travel_date }}</p>
+                        <p><strong>Travelers:</strong> {{ booking.travelers }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Subtotal:</strong> ₹{{ booking.subtotal|floatformat:2 }}</p>
+                        {% if booking.discount > 0 %}<p><strong>Discount:</strong> -₹{{ booking.discount|floatformat:2 }}</p>{% endif %}
+                        <p><strong>Tax:</strong> ₹{{ booking.tax|floatformat:2 }}</p>
+                        <p><strong>Total:</strong> <span class="fw-bold" style="color: var(--primary);">₹{{ booking.total|floatformat:2 }}</span></p>
+                    </div>
+                </div>
+                <hr>
+                <p><strong>Contact:</strong> {{ booking.contact_email }} | {{ booking.contact_phone }}</p>
+                {% if booking.special_requests %}<p><strong>Special Requests:</strong> {{ booking.special_requests }}</p>{% endif %}
+                <div class="mt-4">
+                    <a href="{% url 'tours:my_bookings' %}" class="btn btn-outline-custom">Back to Bookings</a>
+                    {% if booking.status == 'confirmed' %}
+                    <a href="{% url 'tours:booking_cancel' booking.pk %}" class="btn btn-danger" onclick="return confirm('Cancel this booking?')">Cancel Booking</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% if booking.payment %}
+            <div class="form-custom mt-4">
+                <h5>Payment Details</h5>
+                <p><strong>Order ID:</strong> {{ booking.payment.razorpay_order_id }}</p>
+                <p><strong>Payment ID:</strong> {{ booking.payment.razorpay_payment_id|default:'Pending' }}</p>
+                <p><strong>Status:</strong> {{ booking.payment.status }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Operator Dashboard - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    {% if operator_profile.approval_status == 'pending' %}
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i> Your account is pending verification. Some features are limited.
+    </div>
+    {% elif operator_profile.approval_status == 'rejected' %}
+    <div class="alert alert-danger">
+        <i class="bi bi-x-circle"></i> Your application was rejected. Reason: {{ operator_profile.rejection_reason }}
+    </div>
+    {% endif %}
+
+    <h1 class="display-heading" style="font-size: 2rem;">Operator Dashboard</h1>
+    <p class="text-muted">{{ operator_profile.business_name }}</p>
+
+    <div class="row g-4 mt-3">
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_tours }}</div>
+                <div class="stat-label">Tours</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_bookings }}</div>
+                <div class="stat-label">Bookings</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="stat-number">₹{{ total_revenue|floatformat:0 }}</div>
+                <div class="stat-label">Revenue</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="stat-number">{{ operator_profile.get_approval_status_display }}</div>
+                <div class="stat-label">Status</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-md-8">
+            <div class="form-custom">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Your Tours</h5>
+                    <a href="{% url 'accounts:operator_tour_create' %}" class="btn btn-primary-custom btn-sm"><i class="bi bi-plus"></i> New Tour</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Bookings</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tour in tours %}
+                            <tr>
+                                <td>{{ tour.title|truncatechars:30 }}</td>
+                                <td>₹{{ tour.price|floatformat:0 }}</td>
+                                <td><span class="badge {% if tour.status == 'published' %}bg-success{% elif tour.status == 'pending' %}bg-warning{% elif tour.status == 'draft' %}bg-secondary{% else %}bg-danger{% endif %}">{{ tour.get_status_display }}</span></td>
+                                <td>{{ tour.booking_count }}</td>
+                                <td>
+                                    <a href="{% url 'accounts:operator_tour_detail' tour.pk %}" class="btn btn-sm btn-outline-custom"><i class="bi bi-eye"></i></a>
+                                    <a href="{% url 'accounts:operator_tour_edit' tour.pk %}" class="btn btn-sm btn-outline-custom"><i class="bi bi-pencil"></i></a>
+                                    <a href="{% url 'accounts:operator_availability' tour.pk %}" class="btn btn-sm btn-outline-custom"><i class="bi bi-calendar"></i></a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-muted">No tours yet. <a href="{% url 'accounts:operator_tour_create' %}">Create one</a></td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-custom">
+                <h5>Recent Bookings</h5>
+                {% for b in recent_bookings %}
+                <div class="border-bottom pb-2 mb-2">
+                    <small><strong>{{ b.tour.title|truncatechars:25 }}</strong></small>
+                    <small class="d-block text-muted">{{ b.user.email|truncatechars:20 }} - {{ b.travel_date }}</small>
+                    <span class="badge bg-{% if b.status == 'confirmed' %}success{% elif b.status == 'cancelled' %}danger{% else %}warning{% endif %}">{{ b.status }}</span>
+                </div>
+                {% empty %}
+                <p class="text-muted">No bookings yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

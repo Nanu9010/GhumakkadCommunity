@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load travel_tags %}
+
+{% block title %}{{ destination.name }} - {{ brand.name }}{% endblock %}
+{% block meta_description %}{{ destination.meta_description|default:destination.short_description }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'core:destination_list' %}">Destinations</a></li>
+            <li class="breadcrumb-item active">{{ destination.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Hero -->
+    <div class="detail-gallery mb-5" data-aos="fade-up">
+        <div class="row g-2">
+            <div class="col-md-8">
+                {% if destination.image %}
+                <img src="{{ destination.image.url }}" alt="{{ destination.name }}" style="height: 450px;">
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <div class="row g-2">
+                    <div class="col-6 col-md-12">
+                        {% if destination.image_2 %}
+                        <img src="{{ destination.image_2.url }}" alt="{{ destination.name }}" style="height: 219px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-6 col-md-12">
+                        {% if destination.image_3 %}
+                        <img src="{{ destination.image_3.url }}" alt="{{ destination.name }}" style="height: 219px;">
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <div data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h1 class="display-heading" style="font-size: 2.5rem;">{{ destination.name }}</h1>
+                        <p class="text-muted"><i class="bi bi-geo-alt"></i> {{ destination.country }}</p>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'core:wishlist_toggle' 'destination' destination.pk %}" class="btn btn-outline-custom btn-sm">
+                        <i class="bi bi-heart"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                <p>{{ destination.description }}</p>
+            </div>
+
+            <!-- Tours -->
+            <section class="mt-5" data-aos="fade-up">
+                <h3 class="section-title" style="font-size: 1.8rem;">Tours in {{ destination.name }}</h3>
+                <div class="row g-3 mt-3">
+                    {% for tour in tours %}
+                    <div class="col-md-6">
+                        <div class="card-premium tour-card">
+                            {% if tour.image %}<img src="{{ tour.image.url }}" class="card-img-top" alt="{{ tour.title }}" style="height: 180px;">{% endif %}
+                            <div class="card-body">
+                                <h5>{{ tour.title|truncatechars:40 }}</h5>
+                                <div class="tour-meta mb-2">
+                                    <span><i class="bi bi-clock"></i> {{ tour.duration }}</span>
+                                    <span class="ms-3"><i class="bi bi-people"></i> Max {{ tour.max_guests }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price-tag">₹{{ tour.price|floatformat:0 }}</span>
+                                    <a href="{% url 'tours:tour_detail' slug=tour.slug %}" class="btn btn-primary-custom btn-sm">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No tours available yet for this destination.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Hotels -->
+            <section class="mt-5" data-aos="fade-up">
+                <h3 class="section-title" style="font-size: 1.8rem;">Hotels</h3>
+                <div class="row g-3 mt-3">
+                    {% for hotel in hotels %}
+                    <div class="col-md-6">
+                        <div class="card-premium p-0">
+                            <div class="card-body">
+                                <h5>{{ hotel.name }}</h5>
+                                <p class="text-muted small">From ₹{{ hotel.price_per_night|floatformat:0 }}/night</p>
+                                <span class="rating-badge">{{ hotel.rating }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No hotels listed yet.</p>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Reviews -->
+            <section class="mt-5" data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="section-title" style="font-size: 1.8rem;">Reviews</h3>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'core:review_create' 'destination' destination.pk %}" class="btn btn-primary-custom btn-sm">Write Review</a>
+                    {% endif %}
+                </div>
+                {% for review in reviews %}
+                <div class="glass-card p-3 mb-3">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>{{ review.user.email|truncatechars:25 }}</strong>
+                            <span class="stars ms-2">{{ review.rating|star_range }}</span>
+                        </div>
+                        <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    {% if review.title %}<h6 class="mt-2">{{ review.title }}</h6>{% endif %}
+                    <p class="mt-1 mb-0">{{ review.content }}</p>
+                    {% if review.image %}<img src="{{ review.image.url }}" style="height: 100px; border-radius: 8px; margin-top: 8px;">{% endif %}
+                    <div class="mt-2">
+                        <a href="{% url 'core:review_helpful' review.pk %}" class="text-muted small"><i class="bi bi-hand-thumbs-up"></i> Helpful ({{ review.helpful_votes }})</a>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No reviews yet. Be the first!</p>
+                {% endfor %}
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="booking-sidebar" data-aos="fade-left">
+                <h5>About {{ destination.name }}</h5>
+                <hr>
+                <p><strong>Country:</strong> {{ destination.country }}</p>
+                <p><strong>Rating:</strong> <span class="rating-badge">{{ destination.rating }}</span></p>
+                <p><strong>Tours Available:</strong> {{ destination.tours_count }}</p>
+                <p><strong>Reviews:</strong> {{ destination.reviews_count }}</p>
+                {% if destination.price_starting %}
+                <p><strong>Starting from:</strong> ₹{{ destination.price_starting }}</p>
+                {% endif %}
+                {% if user.is_authenticated %}
+                <hr>
+                <a href="{% url 'core:wishlist_toggle' 'destination' destination.pk %}" class="btn btn-outline-custom w-100 mb-2">
+                    <i class="bi bi-heart"></i> Add to Wishlist
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

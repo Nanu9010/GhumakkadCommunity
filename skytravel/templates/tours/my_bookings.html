@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <h1 class="display-heading" style="font-size: 2rem;">My Bookings</h1>
+    <p class="text-muted">All your tour bookings in one place</p>
+    <div class="row g-4 mt-3">
+        {% for b in bookings %}
+        <div class="col-md-6">
+            <div class="card-premium p-3">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>{{ b.tour.title|truncatechars:40 }}</h5>
+                        <small class="text-muted"><i class="bi bi-geo-alt"></i> {{ b.tour.destination.name }}</small>
+                    </div>
+                    <span class="badge {% if b.status == 'confirmed' %}bg-success{% elif b.status == 'cancelled' %}bg-danger{% elif b.status == 'pending' %}bg-warning{% else %}bg-info{% endif %} fs-6">{{ b.status }}</span>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <small class="text-muted">Date</small>
+                        <p class="mb-0">{{ b.travel_date }}</p>
+                    </div>
+                    <div class="col-3">
+                        <small class="text-muted">Travelers</small>
+                        <p class="mb-0">{{ b.travelers }}</p>
+                    </div>
+                    <div class="col-3">
+                        <small class="text-muted">Total</small>
+                        <p class="mb-0 fw-bold">₹{{ b.total|floatformat:0 }}</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{% url 'tours:booking_detail' b.pk %}" class="btn btn-primary-custom btn-sm">View Details</a>
+                    {% if b.status == 'confirmed' %}
+                    <a href="{% url 'tours:booking_cancel' b.pk %}" class="btn btn-outline-custom btn-sm" onclick="return confirm('Cancel this booking?')">Cancel</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-ticket" style="font-size: 3rem; color: var(--muted);"></i>
+            <h4 class="mt-3">No bookings yet</h4>
+            <p class="text-muted">Start exploring tours to make your first booking!</p>
+            <a href="{% url 'tours:tour_list' %}" class="btn btn-primary-custom mt-2">Browse Tours</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

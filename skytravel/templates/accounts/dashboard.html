@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <h1 class="display-heading" style="font-size: 2rem;">My Dashboard</h1>
+    <p class="text-muted">Welcome back, {{ user.email }}</p>
+
+    <div class="row g-4 mt-3">
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="stat-number">{{ bookings.count }}</div>
+                <div class="stat-label">Bookings</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="stat-number">{{ reviews.count }}</div>
+                <div class="stat-label">Reviews</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="stat-number">{{ favorites.count }}</div>
+                <div class="stat-label">Wishlist</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <div class="stat-number">{{ unread_notifications }}</div>
+                <div class="stat-label">Notifications</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-md-6">
+            <div class="form-custom">
+                <h5>Recent Bookings</h5>
+                {% for b in bookings %}
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                    <div>
+                        <strong>{{ b.tour.title|truncatechars:30 }}</strong>
+                        <small class="d-block text-muted">{{ b.travel_date }} | {{ b.travelers }} traveler(s)</small>
+                    </div>
+                    <span class="badge {% if b.status == 'confirmed' %}bg-success{% elif b.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">{{ b.status }}</span>
+                </div>
+                {% empty %}
+                <p class="text-muted">No bookings yet.</p>
+                {% endfor %}
+                <a href="{% url 'tours:my_bookings' %}" class="btn btn-outline-custom btn-sm mt-2">View All</a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-custom">
+                <h5>Quick Links</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'tours:tour_list' %}" class="btn btn-primary-custom">Browse Tours</a>
+                    <a href="{% url 'core:wishlist' %}" class="btn btn-outline-custom">My Wishlist</a>
+                    <a href="{% url 'core:recently_viewed' %}" class="btn btn-outline-custom">Recently Viewed</a>
+                    <a href="{% url 'accounts:profile_update' %}" class="btn btn-outline-custom">Edit Profile</a>
+                    {% if user.profile.user_type == 'traveler' %}
+                    <a href="{% url 'accounts:operator_register' %}" class="btn btn-outline-custom">Become an Operator</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h1>Restaurant Booking #{{ booking.pk }}</h1>
+    <p>Restaurant: {{ booking.restaurant.name }}</p>
+    <p>Date: {{ booking.booking_date }}</p>
+    <p>Time: {{ booking.booking_time }}</p>
+    <p>Meal: {{ booking.get_meal_time_display }}</p>
+    <p>Guests: {{ booking.guests }}</p>
+    <p>Status: {{ booking.get_status_display }}</p>
+</div>
+{% endblock %}

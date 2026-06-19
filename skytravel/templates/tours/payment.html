@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 100px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="form-custom" data-aos="fade-up">
+                <h2 class="section-title text-center mb-4">Complete Payment</h2>
+
+                <div class="glass-card p-3 mb-4">
+                    <h5>{{ booking.tour.title }}</h5>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Date:</span>
+                        <span>{{ booking.travel_date }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Travelers:</span>
+                        <span>{{ booking.travelers }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Subtotal:</span>
+                        <span>₹{{ booking.subtotal|floatformat:2 }}</span>
+                    </div>
+                    {% if booking.discount > 0 %}
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Discount:</span>
+                        <span class="text-success">-₹{{ booking.discount|floatformat:2 }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Tax (5%):</span>
+                        <span>₹{{ booking.tax|floatformat:2 }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong style="color: var(--primary);">₹{{ booking.total|floatformat:2 }}</strong>
+                    </div>
+                </div>
+
+                <p class="text-center text-muted small mb-4">Pay securely with Razorpay</p>
+
+                <form id="paymentForm">
+                    {% csrf_token %}
+                    <script src="https://checkout.razorpay.com/v1/checkout.js"
+                            data-key="{{ razorpay_key_id }}"
+                            data-amount="{{ amount }}"
+                            data-currency="{{ currency }}"
+                            data-order_id="{{ razorpay_order_id }}"
+                            data-name="{{ brand.name }}"
+                            data-description="{{ booking.tour.title }}"
+                            data-image="{% static brand.logo %}"
+                            data-prefill.name="{{ user.get_full_name|default:user.email }}"
+                            data-prefill.email="{{ user.email }}"
+                            data-prefill.contact="{{ booking.contact_phone }}"
+                            data-theme.color="#ef7b22">
+                    </script>
+                    <div class="d-grid gap-2 mt-3">
+                        <button type="button" id="payBtn" class="btn btn-primary-custom btn-lg">Pay ₹{{ booking.total|floatformat:2 }}</button>
+                        <a href="{% url 'tours:tour_detail' slug=booking.tour.slug %}" class="btn btn-outline-custom">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('payBtn').addEventListener('click', function(e) {
+    var options = {
+        "key": "{{ razorpay_key_id }}",
+        "amount": "{{ amount }}",
+        "currency": "{{ currency }}",
+        "name": "{{ brand.name }}",
+        "description": "{{ booking.tour.title }}",
+        "order_id": "{{ razorpay_order_id }}",
+        "prefill": {
+            "name": "{{ user.get_full_name|default:user.email }}",
+            "email": "{{ user.email }}",
+            "contact": "{{ booking.contact_phone }}"
+        },
+        "theme": { "color": "#ef7b22" },
+        "handler": function(response) {
+            window.location.href = "{% url 'tours:payment_success' %}?razorpay_order_id=" + response.razorpay_order_id + "&razorpay_payment_id=" + response.razorpay_payment_id + "&razorpay_signature=" + response.razorpay_signature;
+        },
+        "modal": {
+            "ondismiss": function() {
+                console.log('Payment cancelled');
+            }
+        }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+    e.preventDefault();
+});
+</script>
+{% endblock %}
