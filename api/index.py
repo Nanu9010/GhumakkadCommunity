@@ -2,11 +2,14 @@ import os
 import sys
 import shutil
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(HERE)
-DJANGO_ROOT = os.path.join(PROJECT_ROOT, 'skytravel')
+# __file__ = Travel Community/api/index.py
+# DJANGO_ROOT = Travel Community/skytravel/ (has manage.py)
+# We need DJANGO_ROOT on sys.path so `import skytravel.settings` works
 
-sys.path.insert(0, PROJECT_ROOT)
+HERE = os.path.dirname(os.path.abspath(__file__))
+DJANGO_ROOT = os.path.join(HERE, 'skytravel')
+
+sys.path.insert(0, DJANGO_ROOT)
 os.chdir(DJANGO_ROOT)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skytravel.settings')
