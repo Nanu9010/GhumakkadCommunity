@@ -3,9 +3,10 @@ import sys
 import shutil
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DJANGO_ROOT = os.path.join(HERE, 'skytravel')
+PROJECT_ROOT = os.path.dirname(HERE)
+DJANGO_ROOT = os.path.join(PROJECT_ROOT, 'skytravel')
 
-sys.path.insert(0, DJANGO_ROOT)
+sys.path.insert(0, PROJECT_ROOT)
 os.chdir(DJANGO_ROOT)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skytravel.settings')
