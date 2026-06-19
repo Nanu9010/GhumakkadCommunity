@@ -1,12 +1,15 @@
 import os
 import sys
 
-# Add the project directory to the path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# __file__ = skytravel/api/index.py
+# Going up 2 dirs = skytravel/ (Django project root)
+# We need parent of skytravel/ on sys.path for `import skytravel.settings`
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(PROJECT_ROOT))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skytravel.settings')
+os.environ.setdefault('VERCEL', '1')
 
 from django.core.wsgi import get_wsgi_application
-from django.contrib.staticfiles.handlers import StaticFilesHandler
 
-application = StaticFilesHandler(get_wsgi_application())
+application = get_wsgi_application()
